@@ -7,7 +7,6 @@ This project features a custom encryption and decryption system implemented in C
 
 - [Description](#description)
 - [How It Works](#how-it-works)
-- [Illustrative Images](#illustrative-images)
 - [Installation and Usage](#installation-and-usage)
 - [Author](#author)
 
