@@ -3,76 +3,102 @@
 #include <string.h>
 #include <time.h>
 
-#define MAX_LENGTH 64
-#define MIN_LENGTH 30
+#define MAX_LENGTH 2048
+#define RANDOM_WORDS_COUNT 10
+#define RANDOM_LETTERS_COUNT 26
+#define RANDOM_NUMBERS_COUNT 10
 
-char getRandomChar() {
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
-    return charset[rand() % (sizeof(charset) - 1)];
+const char *randomWords[] = {
+   "bey", "zebra", "moose", "quartz", "fable", "whisk", "jungle", "vivid", "puzzle", "zodiac", "flame"
+};
+
+
+char generateRandomChar() {
+    return (rand() % 94) + 33; 
 }
 
-void binaryEncode(char *output, int value) {
-    for (int i = 7; i >= 0; --i) {
-        *output++ = (value & (1 << i)) ? '1' : '0';
+
+char generateRandomLetter() {
+    return (rand() % RANDOM_LETTERS_COUNT) + 'A'; 
+}
+
+
+char generateRandomNumber() {
+    return (rand() % 10) + '0'; 
+}
+
+
+const char *generateRandomWord() {
+    return randomWords[rand() % RANDOM_WORDS_COUNT];
+}
+
+using a mathematical equation
+void encryptChar(char c, char *output) {
+    int asciiValue = (int)c;
+    int encryptedValue = (asciiValue * 3 + 7) % 256;
+    char randomChar = generateRandomChar();
+    char randomLetter = generateRandomLetter();
+    char randomNumber = generateRandomNumber();
+    const char *randomWord = generateRandomWord();
+
+    sprintf(output, "%03d %c %c %s ", encryptedValue, randomLetter, randomNumber, randomWord);
+}
+
+char decryptChar(const char *input) {
+    int encryptedValue;
+    char randomLetter;
+    char randomNumber;
+    char randomWord[10];
+    
+    sscanf(input, "%d %c %c %s", &encryptedValue, &randomLetter, &randomNumber, randomWord);
+
+    int asciiValue = (encryptedValue - 7 + 256) / 3; 
+    return (char)asciiValue;
+}
+
+
+void encryptText(const char *input, char *output) {
+    char encryptedChar[MAX_LENGTH];
+    char *outputPtr = output;
+
+    srand(time(NULL));
+
+    while (*input) {
+        encryptChar(*input, encryptedChar);
+        sprintf(outputPtr, "%s", encryptedChar);
+        outputPtr += strlen(encryptedChar);
+        input++;
     }
-    *output = '\0';
+    *outputPtr = '\0';
 }
 
-void hexEncode(char *output, int value) {
-    sprintf(output, "%X", value);
-}
+void decryptText(const char *input, char *output) {
+    char buffer[MAX_LENGTH];
+    const char *ptr = input;
+    int index = 0;
+    char decryptedChar;
+    char encryptedPart[50];
 
-
-void decimalEncode(char *output, int value) {
-    sprintf(output, "%d", value);
-}
-
-void customEncrypt(char *input, char *output) {
-    int length = strlen(input);
-    int outputLength = rand() % (MAX_LENGTH - MIN_LENGTH + 1) + MIN_LENGTH;
-    int outputIndex = 0;
-
-    for (int i = 0; i < length; i++) {
-        char temp[9];
-        int option = rand() % 3;
-        
-        switch (option) {
-            case 0:
-                binaryEncode(temp, input[i]);
-                break;
-            case 1:
-                hexEncode(temp, input[i]);
-                break;
-            case 2:
-                decimalEncode(temp, input[i]);
-                break;
-        }
-
-        for (int j = 0; temp[j] != '\0' && outputIndex < outputLength; j++) {
-            output[outputIndex++] = temp[j];
-        }
-
-        if (rand() % 10 == 0 && outputIndex < outputLength) { // كلما تم استيفاء هذا الشرط ، قم بإضافة "Hunter"
-            strcpy(output + outputIndex, "Hunter");
-            outputIndex += strlen("Hunter");
-        } else if (rand() % 4 == 0 && outputIndex < outputLength) { // أضف رمز عشوائي
-            output[outputIndex++] = getRandomChar();
-        }
-
-        if (outputIndex >= outputLength) break;
+    while (*ptr) {
+        sscanf(ptr, "%s", encryptedPart);
+        ptr += strlen(encryptedPart) + 1;
+        decryptedChar = decryptChar(encryptedPart);
+        buffer[index++] = decryptedChar;
     }
-
-    output[outputIndex] = '\0';
+    buffer[index] = '\0';
+    strcpy(output, buffer);
 }
 
 int main() {
-    srand(time(0));
-    char input[] = "HelloWorld";
-    char output[MAX_LENGTH + 1];
+    char text[] = "Hello";
+    char encrypted[MAX_LENGTH] = {0};
+    char decrypted[MAX_LENGTH] = {0};
 
-    customEncrypt(input, output);
+    encryptText(text, encrypted);
+    printf("Encrypted: %s\n", encrypted);
 
-    printf("Encrypted: %s\n", output);
+    decryptText(encrypted, decrypted);
+    printf("Decrypted: %s\n", decrypted);
 
     return 0;
 }
