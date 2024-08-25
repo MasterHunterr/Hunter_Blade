@@ -40,20 +40,6 @@ Random characters and the word "Hunter" are inserted to increase the complexity 
 2. **Decoding:**
    - Encoded parts of the text are converted back into the original data using the various encodings.
 
-## Illustrative Images
-
-### Binary Encoding
-
-![Binary Encoding](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/ASCII_code.svg/1920px-ASCII_code.svg.png)
-
-### Hexadecimal Encoding
-
-![Hexadecimal Encoding](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Hexadecimal-hexadecimal.svg/1920px-Hexadecimal-hexadecimal.svg.png)
-
-### Decimal Encoding
-
-![Decimal Encoding](https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Decimal-to-binary_conversion_table.svg/1920px-Decimal-to-binary_conversion_table.svg.png)
-
 ## Installation and Usage
 
 ### Installation
