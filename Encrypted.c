@@ -4,61 +4,49 @@
 #include <time.h>
 
 #define MAX_LENGTH 2048
-#define RANDOM_WORDS_COUNT 10
 #define RANDOM_LETTERS_COUNT 26
-#define RANDOM_NUMBERS_COUNT 10
-
-const char *randomWords[] = {
-   "bey", "zebra", "moose", "quartz", "fable", "whisk", "jungle", "vivid", "puzzle", "zodiac", "flame"
-};
-
 
 char generateRandomChar() {
     return (rand() % 94) + 33; 
 }
 
-
 char generateRandomLetter() {
     return (rand() % RANDOM_LETTERS_COUNT) + 'A'; 
 }
-
 
 char generateRandomNumber() {
     return (rand() % 10) + '0'; 
 }
 
-
-const char *generateRandomWord() {
-    return randomWords[rand() % RANDOM_WORDS_COUNT];
-}
-
-using a mathematical equation
 void encryptChar(char c, char *output) {
     int asciiValue = (int)c;
     int encryptedValue = (asciiValue * 3 + 7) % 256;
-    char randomChar = generateRandomChar();
     char randomLetter = generateRandomLetter();
     char randomNumber = generateRandomNumber();
-    const char *randomWord = generateRandomWord();
 
-    sprintf(output, "%03d %c %c %s ", encryptedValue, randomLetter, randomNumber, randomWord);
+    sprintf(output, "%03d %c %c ", encryptedValue, randomLetter, randomNumber);
 }
 
 char decryptChar(const char *input) {
     int encryptedValue;
     char randomLetter;
     char randomNumber;
-    char randomWord[10];
     
-    sscanf(input, "%d %c %c %s", &encryptedValue, &randomLetter, &randomNumber, randomWord);
+    sscanf(input, "%d %c %c", &encryptedValue, &randomLetter, &randomNumber);
 
-    int asciiValue = (encryptedValue - 7 + 256) / 3; 
+    // Corrected decryption formula
+    int asciiValue = 0;
+    for (int i = 0; i < 256; i++) {
+        if ((i * 3 + 7) % 256 == encryptedValue) {
+            asciiValue = i;
+            break;
+        }
+    }
     return (char)asciiValue;
 }
 
-
 void encryptText(const char *input, char *output) {
-    char encryptedChar[MAX_LENGTH];
+    char encryptedChar[50];
     char *outputPtr = output;
 
     srand(time(NULL));
@@ -77,20 +65,24 @@ void decryptText(const char *input, char *output) {
     const char *ptr = input;
     int index = 0;
     char decryptedChar;
-    char encryptedPart[50];
+    char encryptedPart[7];
 
-    while (*ptr) {
-        sscanf(ptr, "%s", encryptedPart);
-        ptr += strlen(encryptedPart) + 1;
+    int length = strlen(input);
+    while (ptr < input + length) {
+        while (*ptr == ' ') ptr++; // skip spaces
+        strncpy(encryptedPart, ptr, 6);
+        encryptedPart[6] = '\0';
+        ptr += 7;
         decryptedChar = decryptChar(encryptedPart);
         buffer[index++] = decryptedChar;
     }
+    
     buffer[index] = '\0';
     strcpy(output, buffer);
 }
 
-int main() {
-    char text[] = "Hello";
+int main() { 
+    char text[] = "Hello, world this is a test for Encrypted Huntre";
     char encrypted[MAX_LENGTH] = {0};
     char decrypted[MAX_LENGTH] = {0};
 
